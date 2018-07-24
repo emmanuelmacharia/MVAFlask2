@@ -2,10 +2,11 @@ from flask import Flask, url_for, request, render_template;
 from app import app;
 import redis
 
+r =redis.StrictRedis(host='localhost', port = 6379, db=0,  charset = 'utf-8', decode_responses = True)
 #server/
 @app.route('/')
 def hello():
-    r =redis.StrictRedis(host='localhost', port = 6379, db=0)
+
    #Works the same  
    #r=redis.StrictRedis('localhost', 6379, 0)
     #r=redis.StictRedis()
