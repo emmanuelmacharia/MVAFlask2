@@ -2,10 +2,10 @@ from flask import Flask, url_for, request, render_template;
 from app import app;
 import redis
 
+r =redis.StrictRedis(host='localhost', port = 6379, db=0, charset = 'utf-8', decode_responses = True) #Initializing the database
 #server/
 @app.route('/')
 def hello():
-    r =redis.StrictRedis(host='localhost', port = 6379, db=0)
    #Works the same  
    #r=redis.StrictRedis('localhost', 6379, 0)
     #r=redis.StictRedis()
@@ -24,7 +24,10 @@ def create():
         title = request.form['title']
         question = request.form['question']
         answer = request.form['answer']
-        #store answer
+        #store answer - keyname will be the title typed in: Question
+        r.set(title + ':question', question)
+        r.set(title + ':answer', answer)
+
 
         #return the template
         return render_template('questioncreated.html', question = question);
@@ -36,16 +39,17 @@ def create():
 def question(title):
     if request.method == 'GET':
         #send user the form
-        question = 'Question here'
         #read question from database
-
+        question = r.get(title + ':question')
+              
         return render_template('Answers.html', question=question);
     elif request.method == 'POST':
         #user attempts to answer the question
         Submittedanswer = request.form['Submittedanswer'];
 
         #get answer from database
-        answer = 'Answer'
+        answer = r.get(title + ':answer')
+
         if Submittedanswer == answer:
             return render_template('correct.html')
         else:
